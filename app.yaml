@@ -1,0 +1,9 @@
+name: PPE Detection
+description: ""
+ports: []
+bricks:
+- arduino:video_object_detection:
+    model: ei-model-1036859-4
+    variables:
+      EI_OBJ_DETECTION_MODEL: /home/arduino/.arduino-bricks/ei-models/PPPE.eim
+icon: 🦺
