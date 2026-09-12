@@ -1,9 +1,6 @@
-name: PPE Detection
+name: PPE Detection with image classification
 description: ""
 ports: []
 bricks:
-- arduino:video_object_detection:
-    model: ei-model-1036859-4
-    variables:
-      EI_OBJ_DETECTION_MODEL: /home/arduino/.arduino-bricks/ei-models/PPPE.eim
-icon: 🦺
+- arduino:video_image_classification:
+    model: ei-model-1036858-1
