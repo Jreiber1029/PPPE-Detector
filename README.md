@@ -11,6 +11,7 @@ cp ~/PPE.eim \
 chmod 755 \
   ~/.arduino-bricks/models/custom-ei/ei-model-1036858-1/model.eim
 - run: nano ~/.arduino-bricks/models/custom-ei/ei-model-1036858-1/model.yaml
+
 Paste this in
 
 ```yaml
