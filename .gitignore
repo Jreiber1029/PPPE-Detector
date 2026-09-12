@@ -1,2 +1,6 @@
 # ignore app cache folder
 .cache/
+
+# Python bytecode created by local checks
+__pycache__/
+*.pyc

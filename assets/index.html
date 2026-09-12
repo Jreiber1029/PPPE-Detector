@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#092f36" />
+    <title>Personal Protective Equipment Detector – Exposure Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <p class="eyebrow">UNO Q · LOCAL DASHBOARD</p>
+      <h1>Personal Protective Equipment Detector</h1>
+      <p class="subtitle">Exposure Dashboard</p>
+    </header>
+
+    <main>
+      <section class="toolbar card">
+        <label for="date-select">Exposure date</label>
+        <div class="controls">
+          <select id="date-select" aria-label="Select exposure date"></select>
+          <button id="refresh-button" type="button">Refresh readings</button>
+        </div>
+        <p id="status" role="status">Loading available dates…</p>
+      </section>
+
+      <section id="daily-overview" class="overview" aria-live="polite"></section>
+
+      <section>
+        <div class="section-heading">
+          <h2>Daily summary</h2>
+          <p>Exposure time is estimated from the recorded timestamps.</p>
+        </div>
+        <div class="table-wrap card">
+          <table>
+            <thead>
+              <tr>
+                <th>Reading</th>
+                <th>Maximum</th>
+                <th>Average</th>
+                <th>Events</th>
+                <th>Time above</th>
+              </tr>
+            </thead>
+            <tbody id="summary-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-heading">
+          <div>
+            <h2>Readings through the day</h2>
+            <p>Red means above the limit without PPE. Green means below the limit or protected by confirmed PPE.</p>
+          </div>
+          <label class="view-toggle">
+            <input id="activity-toggle" type="checkbox" checked />
+            Focus on activity
+          </label>
+        </div>
+        <div id="charts" class="charts"></div>
+      </section>
+    </main>
+
+    <footer>Read-only local dashboard · Data remains in the original CSV files</footer>
+    <script src="app.js"></script>
+  </body>
+</html>

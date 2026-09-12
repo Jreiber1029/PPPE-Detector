@@ -4,3 +4,4 @@ ports: []
 bricks:
 - arduino:video_image_classification:
     model: ei-model-1036858-1
+- arduino:web_ui

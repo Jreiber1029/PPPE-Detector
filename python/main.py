@@ -5,8 +5,11 @@ import time
 from datetime import datetime
 
 from arduino.app_bricks.video_imageclassification import VideoImageClassification
+from arduino.app_bricks.web_ui import WebUI
 from arduino.app_peripherals.camera import Camera
 from arduino.app_utils import App, Bridge
+
+from dashboard import DashboardData
 
 # Detection settings
 DETECTION_THRESHOLD = 0.10
@@ -54,6 +57,32 @@ camera = Camera("usb:0", resolution=(640, 480), fps=10)
 classifier = VideoImageClassification(
     camera=camera, confidence=DETECTION_THRESHOLD, debounce_sec=0.0
 )
+
+
+# The dashboard reads CSV files only when a browser requests data. It runs on
+# the Linux side and does not participate in sensor, alarm, or PPE decisions.
+dashboard_data = DashboardData(
+    LOG_DIRECTORY,
+    {
+        "pm1": PM1_TRIGGER,
+        "pm25": PM25_TRIGGER,
+        "pm4": PM4_TRIGGER,
+        "pm10": PM10_TRIGGER,
+        "voc": VOC_TRIGGER,
+        "nox": NOX_TRIGGER,
+        "co2": CO2_TRIGGER,
+    },
+)
+
+dashboard_ui = WebUI(
+    addr="0.0.0.0",
+    port=7000,
+    api_path_prefix="/api",
+    cors_origins="",
+)
+
+dashboard_ui.expose_api("GET", "/dates", dashboard_data.available_dates)
+dashboard_ui.expose_api("GET", "/day/{selected_day}", dashboard_data.day)
 
 
 # State shared by the Bridge handlers, detector callback, and watchdog
@@ -733,6 +762,13 @@ print()
 print("CSV logs saved to:")
 
 print(LOG_DIRECTORY)
+
+
+print()
+
+print("Exposure dashboard:")
+
+print(dashboard_ui.url)
 
 
 print()
