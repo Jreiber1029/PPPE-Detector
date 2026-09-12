@@ -34,6 +34,7 @@ metadata:
   ei-model-type: float32
   ei-project-id: "1036858"
   source: edgeimpulse
+
 After pasting press Ctrl O to save, enter and Ctrl X to exit.
 - The model will then be within the Video Image Classification Brick. You may need to reload APP Lab 
 
