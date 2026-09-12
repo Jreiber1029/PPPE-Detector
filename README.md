@@ -13,6 +13,7 @@ chmod 755 \
 - run: nano ~/.arduino-bricks/models/custom-ei/ei-model-1036858-1/model.yaml
 Paste this in
 
+```yaml
 id: ei-model-1036858-1
 name: PPE Detector close
 runner: brick
@@ -34,6 +35,8 @@ metadata:
   ei-model-type: float32
   ei-project-id: "1036858"
   source: edgeimpulse
+```
+
 
 After pasting press Ctrl O to save, enter and Ctrl X to exit.
 - The model will then be within the Video Image Classification Brick. You may need to reload APP Lab 
