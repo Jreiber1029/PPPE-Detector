@@ -2,9 +2,9 @@ import csv
 import math
 import os
 from datetime import date, datetime
+from itertools import pairwise
 
 from fastapi import HTTPException
-
 
 # The parser accepts the current headings and a few common alternatives without
 # requiring any changes to existing log files.
@@ -89,14 +89,20 @@ class DashboardData:
             row = {"timestamp": timestamp}
 
             for metric in METRICS:
-                row[metric] = self._parse_number(self._get_value(raw_row, metric), metric)
+                row[metric] = self._parse_number(
+                    self._get_value(raw_row, metric), metric
+                )
 
             ppe_confirmed = self._parse_bool(self._get_value(raw_row, "ppe_confirmed"))
             mask_detected = self._parse_bool(self._get_value(raw_row, "mask_detected"))
             respirator_detected = self._parse_bool(
                 self._get_value(raw_row, "respirator_detected")
             )
-            row["ppe_worn"] = ppe_confirmed is True or mask_detected is True or respirator_detected is True
+            row["ppe_worn"] = (
+                ppe_confirmed is True
+                or mask_detected is True
+                or respirator_detected is True
+            )
 
             if any(row[metric] is not None for metric in METRICS):
                 rows.append(row)
@@ -150,7 +156,9 @@ class DashboardData:
             try:
                 # Replacing NUL bytes makes interrupted files readable while the
                 # logger continues to append to them.
-                with open(path, "r", encoding="utf-8", errors="replace", newline="") as file:
+                with open(
+                    path, "r", encoding="utf-8", errors="replace", newline=""
+                ) as file:
                     clean_lines = (line.replace("\x00", "") for line in file)
                     reader = csv.DictReader(clean_lines)
 
@@ -254,10 +262,14 @@ class DashboardData:
 
         positive_deltas = [
             (right[0] - left[0]).total_seconds()
-            for left, right in zip(samples, samples[1:])
+            for left, right in pairwise(samples)
             if 0 < (right[0] - left[0]).total_seconds() <= 10
         ]
-        typical_interval = sorted(positive_deltas)[len(positive_deltas) // 2] if positive_deltas else 1.0
+        typical_interval = (
+            sorted(positive_deltas)[len(positive_deltas) // 2]
+            if positive_deltas
+            else 1.0
+        )
         maximum_gap = max(typical_interval * 3, 3.0)
         events = 0
         seconds = 0.0
@@ -316,13 +328,19 @@ class DashboardData:
                 ]
 
                 if valid_indices:
-                    selected.add(min(valid_indices, key=lambda index: rows[index][metric]))
-                    selected.add(max(valid_indices, key=lambda index: rows[index][metric]))
+                    selected.add(
+                        min(valid_indices, key=lambda index: rows[index][metric])
+                    )
+                    selected.add(
+                        max(valid_indices, key=lambda index: rows[index][metric])
+                    )
 
         selected = sorted(selected)
 
         if len(selected) > self.max_points:
             step = (len(selected) - 1) / (self.max_points - 1)
-            selected = sorted({selected[round(index * step)] for index in range(self.max_points)})
+            selected = sorted(
+                {selected[round(index * step)] for index in range(self.max_points)}
+            )
 
         return [rows[index] for index in selected]

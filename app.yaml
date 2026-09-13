@@ -1,7 +1,7 @@
 name: PPE Detection with image classification
-description: ""
+description: Monitors SEN66 air quality, checks for PPE, sounds hazard alarms, and displays exposure logs on a local dashboard.
 ports: []
 bricks:
 - arduino:video_image_classification:
     model: ei-model-1036858-1
-- arduino:web_ui
+- arduino:web_ui: {}

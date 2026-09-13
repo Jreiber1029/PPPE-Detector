@@ -1,5 +1,4 @@
 import csv
-import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -15,7 +14,6 @@ import sys
 sys.path.insert(0, str(PYTHON_DIRECTORY))
 
 from dashboard import DashboardData
-
 
 THRESHOLDS = {
     "pm1": 20.0,
@@ -33,16 +31,37 @@ class DashboardDataTests(unittest.TestCase):
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.logs = Path(self.temporary_directory.name)
 
-        # Tests operate on copies; the project logs are never opened for writing.
-        for source in (PROJECT_ROOT / "data").glob("*.csv"):
-            shutil.copy2(source, self.logs / source.name)
+        # Use a representative log so tests never depend on personal data.
+        path = self.logs / "sen66_2026-09-10.csv"
+        with path.open("w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(
+                [
+                    "timestamp",
+                    "pm1_ug_m3",
+                    "pm25_ug_m3",
+                    "pm4_ug_m3",
+                    "pm10_ug_m3",
+                    "voc_index",
+                    "nox_index",
+                    "co2_ppm",
+                    "temperature_c",
+                    "humidity_percent",
+                ]
+            )
+            writer.writerow(
+                ["2026-09-10T12:00:00", 10, 20, 30, 40, 100, 10, 800, 22, 45]
+            )
+            writer.writerow(
+                ["2026-09-10T12:00:01", 25, 45, 75, 105, 2100, 110, 3100, 23, 46]
+            )
 
         self.dashboard = DashboardData(str(self.logs), THRESHOLDS, max_points=20)
 
     def tearDown(self):
         self.temporary_directory.cleanup()
 
-    def test_real_log_copies_are_discovered_and_filtered_by_day(self):
+    def test_logs_are_discovered_and_filtered_by_day(self):
         dates = self.dashboard.available_dates()["dates"]
 
         self.assertIn("2026-09-10", dates)

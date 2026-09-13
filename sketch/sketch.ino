@@ -40,7 +40,7 @@ int alarmStep = 0;
 
 const float PM1_TRIGGER = 20.0;
 const float PM25_TRIGGER = 40.0;
-const float PM4_TRIGGER = 70.0;
+const float PM4_TRIGGER = 70;
 const float PM10_TRIGGER = 100.0;
 
 const int VOC_TRIGGER = 2000;
@@ -48,8 +48,7 @@ const int NOX_TRIGGER = 100;
 
 const uint16_t CO2_TRIGGER = 3000;
 
-// SEN66 must detect hazard for 3 straight readings before YOLO and buzzer starts
-// Must detect 5 readings below threshold for them to stop.
+// Start PPE detection after 3 hazardous readings and stop it after 5 safe ones.
 
 const int REQUIRED_DANGER_READINGS = 3;
 const int REQUIRED_SAFE_READINGS = 5;
@@ -115,10 +114,6 @@ void showWarmupProgress(unsigned long elapsedMs) {
 
   int ledsToLight = (elapsedMs * 104UL) / SENSOR_WARMUP_TIME;
 
-  if (ledsToLight < 0) {
-    ledsToLight = 0;
-  }
-
   if (ledsToLight > 104) {
     ledsToLight = 104;
   }
@@ -130,8 +125,8 @@ void showWarmupProgress(unsigned long elapsedMs) {
   matrix.draw(frame);
 }
 
-// The buzzer is active-low, so LOW turns it on and HIGH turns it off.
-void buzzerHardware(bool on) { digitalWrite(BUZZER_PIN, on ? LOW : HIGH); }
+// The buzzer is active-high, so HIGH turns it on and LOW turns it off.
+void buzzerHardware(bool on) { digitalWrite(BUZZER_PIN, on ? HIGH : LOW); }
 
 // Apply the highest-priority alarm that is currently active.
 void refreshAlarmMode() {
@@ -176,7 +171,7 @@ void refreshAlarmMode() {
   }
 }
 
-// Called by python/main.py through Bridge.call("set_alarm", mode).
+// Called by python/main.py through Bridge.notify("set_alarm", mode).
 void setAlarm(int alarmMode) {
   requestedPpeAlarmMode = alarmMode;
   refreshAlarmMode();
@@ -679,16 +674,12 @@ void loop() {
       matrix.draw(vocFrame);
     }
 
-    else if (particulateHazard) {
+    else {
       matrix.draw(pmFrame);
     }
 
-    else {
-      matrix.draw(multipleFrame);
-    }
-
     Serial.println();
-    Serial.println("### YOLO TRIGGER SENT ###");
+    Serial.println("### PPE DETECTION TRIGGER SENT ###");
 
     Serial.print("Active hazards: ");
 
@@ -716,7 +707,7 @@ void loop() {
     }
 
     Serial.println();
-    Serial.println("### YOLO STOP SENT ###");
+    Serial.println("### PPE DETECTION STOP SENT ###");
   }
 
   // Print a readable snapshot for `arduino-app-cli monitor`.
