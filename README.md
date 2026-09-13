@@ -1,3 +1,5 @@
+This repository is for the Hackster UNO Q invesnt the future competition
+
 Instructions for adding Edge Impulse Model to App Lab if the normal way does not work, you will need to have nano downloaded in the UNO Q terminal
 - After downloading the model and renaming it,you will then need to open your computers PowerShell of terminal not the UNO Qs and run: 
 scp "$HOME\Downloads\PPE.eim"arduino@Myboard.local:/home/arduino/PPE.eim
